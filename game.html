@@ -7,7 +7,6 @@
     
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> 
     <link type="text/css" rel="stylesheet" href="css/materialize.css"  media="screen,projection"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <style>
         @font-face {
             font-family: 'MyFont';
@@ -16,13 +15,8 @@
             font-style: normal;
             font-display: swap;
         }
-
-        html {
-            font-family: 'MyFont', sans-serif;
-        }
-        body {
-            background-color: #0B0F2A;
-        }
+        html { font-family: 'MyFont', sans-serif; }
+        body { background-color: #0B0F2A; }
         .nav-wrapper {
             background-color: #FFBF00;
             color: #0B0F2A;
@@ -45,25 +39,86 @@
 
     <div class="container">
         <div class="row">
-            <div class="col s8">
+            <div class="col s12">
                 <h1 class="my2-text">Игры</h1>
-                <div class="preloader-wrapper active">
+
+                <!-- Прелоадер, скроем когда загрузится -->
+                <div id="preloader" class="preloader-wrapper active">
                     <div class="spinner-layer spinner-my-only">
-                    <div class="circle-clipper left">
-                        <div class="circle"></div>
-                    </div><div class="gap-patch">
-                        <div class="circle"></div>
-                    </div><div class="circle-clipper right">
-                        <div class="circle"></div>
-                    </div>
+                        <div class="circle-clipper left"><div class="circle"></div></div>
+                        <div class="gap-patch"><div class="circle"></div></div>
+                        <div class="circle-clipper right"><div class="circle"></div></div>
                     </div>
                 </div>
+
+                <!-- Сюда будут вставляться карточки -->
+                <div id="programs-list" class="row"></div>
+
+                <!-- ШАБЛОН твоей карточки (скрыт, используется как образец) -->
+                <template id="program-card-template">
+                    <div class="col s4">
+                        <div class="card">
+                            <div class="card-image">
+                                <img src="" alt="">
+                                <a class="btn-floating btn-large halfway-fab waves-effect waves-light my1" href="#">
+                                    <i class="material-icons">download</i>
+                                </a>
+                            </div>
+                            <div class="card-content">
+                                <h5 class="card-info"></h5>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
             </div>
         </div>
-        
     </div>
 
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="js/materialize.min.js"></script>
+
+    <script>
+        async function loadPrograms() {
+            const list = document.getElementById('programs-list');
+            const preloader = document.getElementById('preloader');
+            const template = document.getElementById('program-card-template');
+
+            try {
+                const res = await fetch('Db/Gane/gm.json', { cache: 'no-store' });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const data = await res.json();
+                const programs = data.programs || [];
+
+                preloader.style.display = 'none';
+
+                programs.forEach(prog => {
+                    // Клонируем твою карточку
+                    const clone = template.content.cloneNode(true);
+
+                    const img = clone.querySelector('.card-image img');
+                    img.src = prog.banner;
+                    img.alt = prog.name;
+
+                    const btn = clone.querySelector('.card-image a');
+                    btn.href = prog.download_url;
+                    btn.target = '_blank';
+                    btn.rel = 'noopener';
+
+                    clone.querySelector('.card-info').textContent =
+                        prog.info;
+
+                    list.appendChild(clone);
+                });
+
+            } catch (err) {
+                console.error(err);
+                preloader.style.display = 'none';
+                list.innerHTML = '<div class="col s12"><p style="color:#fff">Ошибка загрузки: ' + err.message + '</p></div>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadPrograms);
+    </script>
 </body>
 </html>
