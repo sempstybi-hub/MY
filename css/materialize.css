@@ -7680,6 +7680,11 @@ input[type=range]:focus::-ms-fill-upper {
   border-color: #0f9d58;
 }
 
+.spinner-my,
+.spinner-my-only {
+  border-color: #FFBF00;
+}
+
 /**
  * IMPORTANT NOTE ABOUT CSS ANIMATION PROPERTIES (keanulee):
  *

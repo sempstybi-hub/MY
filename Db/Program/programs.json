@@ -1,0 +1,13 @@
+{
+  "programs": [
+    {
+      "id": 1,
+      "name": "GHT",
+      "version": "1.0",
+      "size": "15 MB",
+      "info": "Удобное хранилище с помощю GitHub.",
+      "download_url": "https://code.visualstudio.com/download",
+      "banner": "Db/Program/ght/baner.png"
+    }
+  ]
+}
